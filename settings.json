@@ -1,0 +1,10 @@
+{
+  "defaults" : {
+    "decks" : 1,
+    "initial_cards" : 7,
+    "draw_skip" : true,
+    "must_play" : false,
+    "stacking_plus" : true,
+    "stacking_symbols" : false
+  }
+}
