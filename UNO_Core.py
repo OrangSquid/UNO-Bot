@@ -1,6 +1,8 @@
 import random
 import discord
 import datetime
+from typing import Dict, List, Any
+from discord.ext import commands
 
 DECK = ['wild card', 'wild card', 'wild card', 'wild card', 'wild plus', 'wild plus', 'wild plus', 'wild plus',
         'red 0', 'red 1', 'red 1', 'red 2', 'red 2', 'red 3', 'red 3', 'red 4', 'red 4', 'red 5', 'red 5', 'red 6',
@@ -16,14 +18,23 @@ DECK = ['wild card', 'wild card', 'wild card', 'wild card', 'wild plus', 'wild p
         'green skip', 'green reverse', 'green reverse', 'green plus', 'green plus']
 
 
+class Player:
+
+    def __init__(self, user):
+        self.deck = []
+        self.user = user
+
+
 class Uno:
 
-    def __init__(self, players, card_info, channel, bot):
+    def __init__(self, players: List[Player], card_info: Dict[str, List[Any]],
+                 channel: discord.TextChannel, bot: commands.bot):
         # Variables to be used later
         self.waiting_for = None  # The current player's turn
         self.playing_card = None  # Holds the card to be played temporarily for checking
         self.color_change = None  # Holds the color information for change if wild card is used
         self.stop = False
+        self.reverse = False
         self.pointer = 0
         self.played_cards = []
         self.COLOR_TO_DECIMAL = {
@@ -52,7 +63,8 @@ class Uno:
             for x in range(0, 7):
                 player.deck.append(self.drawing_deck.pop(0))
 
-    async def play_game(self):
+    async def play_game(self) -> None:
+        # Send the game order embed
         embed_order = discord.Embed(title="The game order will be: ", description="", timestamp=datetime.datetime.now())
         embed_order.set_author(name="Let's Play!", icon_url=str(self.bot.get_user(671451098820640769).avatar_url))
         embed_order.set_footer(text="UNO Game at \"{}\"".format(self.channel.guild))
@@ -68,6 +80,7 @@ class Uno:
                                    "use a wild 4+, just use \"wild plus\"** "
         await self.channel.send(embed=embed_order)
 
+        # Send the card on the table
         embed_on_table = discord.Embed(color=self.COLOR_TO_DECIMAL[self.on_table.split()[0]],
                                        timestamp=datetime.datetime.now())
         embed_on_table.set_author(name="First Turn", icon_url=str(self.bot.get_user(671451098820640769).avatar_url))
@@ -82,11 +95,9 @@ class Uno:
         for player in self.order:
             await player.user.send(self.deck_to_emoji(player))
 
-        drew_card = False  # Tells if the player drew a card in the next turn loop
+        drew_card = False  # Tells if the player drew a card to the next turn loop
+        # The loop for turns
         while len(self.order) != 1:
-            if self.stop:
-                await self.channel.send("The game will now stop")
-                return
             player = self.order[self.pointer]
             embed_turn = discord.Embed(description="")
             embed_turn.set_author(name="{} turn".format(player.user), icon_url=str(player.user.avatar_url))
@@ -100,6 +111,11 @@ class Uno:
             await self.bot.wait_for("message", check=self.check_playing_card)
             # Makes the card on the table a list for easier checking with indexes
             list_on_table = self.on_table.split()
+
+            # in case a user has sent a stop command
+            if self.stop:
+                await self.channel.send("The game will now stop")
+                return
 
             # Check card sent in DMs or guild:
 
@@ -123,10 +139,9 @@ class Uno:
                 # Reverse Card
                 elif self.playing_card.endswith("reverse"):
                     if len(self.order) == 2:
-                        self.pointer -= 1
+                        self.pointer = self.increment_pointer(self.pointer)
                     else:
-                        self.order.reverse()
-                        self.pointer = abs(self.pointer - len(self.order))
+                        self.reverse = not self.reverse
                     embed_turn.description += "\nThe order has been reversed"
 
             # Draw a Card
@@ -137,14 +152,20 @@ class Uno:
                 player.deck.append(drawn_card)
                 if drawn_card.startswith(list_on_table[0]) or \
                         drawn_card.endswith(list_on_table[1]) or drawn_card.startswith("wild"):
-                    await player.user.send("You can play the card you drew!")
+                    await player.user.send("You can play the card you drew! In case you don't want to play user "
+                                           "\"skip\"")
                     await player.user.send(self.deck_to_emoji(player))
                     drew_card = True
                     continue
                 else:
-                    embed_turn.description += "{} drew a card".format(player.user)
+                    embed_turn.description += "{} drew a card\n".format(player.user)
                     embed_turn.set_thumbnail(url="https://raw.githubusercontent.com/OrangSquid/UNO-Bot/master/deck"
                                                  "/card%20draw.png")
+
+            # Skip turn in case you got a card you can play
+            elif self.playing_card == "skip" and drew_card:
+                embed_turn.set_thumbnail(url="https://raw.githubusercontent.com/OrangSquid/UNO-Bot/master/deck"
+                                             "/card%20draw.png")
 
             # Invalid Card
             else:
@@ -152,22 +173,23 @@ class Uno:
                 continue
 
             await player.user.send(self.deck_to_emoji(player))
+            # Check if the current player has been left without cards
             if not player.deck:
                 self.order.remove(player)
                 await self.channel.send("{.user.mention} has no cards! They are leaving the game!".format(player))
-
+            # Add one to the pointer (this after the possible player's removal to prevent bugs)
             self.pointer = self.increment_pointer(self.pointer)
-            embed_turn.description += "\nYour turn now, **{}**".format(self.order[self.pointer].user)
-            embed_turn.timestamp = datetime.datetime.now()
-            if self.playing_card != "draw":
+            embed_turn.description += "Your turn now **{}**".format(self.order[self.pointer].user)
+            if self.playing_card != "draw" and self.playing_card != "skip":
                 embed_turn.color = self.COLOR_TO_DECIMAL[self.playing_card.split()[0]]
+            embed_turn.timestamp = datetime.datetime.now()
             drew_card = False
             await self.channel.send(embed=embed_turn)
 
         else:
             await self.channel.send("The game has ended!")
 
-    async def played_card(self, player, is_wild, embed):
+    async def played_card(self, player: Player, is_wild: bool, embed: discord.Embed()) -> discord.Embed:
         player.deck.remove(self.playing_card)
         if is_wild:
             await player.user.send("Choose your color (red, yellow, green, blue)")
@@ -183,7 +205,7 @@ class Uno:
         self.played_cards.append(self.playing_card)
         return embed
 
-    async def draw_card(self, embed, cards_to_draw):
+    async def draw_card(self, embed: discord.Embed(), cards_to_draw: int) -> discord.Embed:
         self.pointer = self.increment_pointer(self.pointer)
         for x in range(cards_to_draw):
             if not self.drawing_deck:
@@ -198,24 +220,27 @@ class Uno:
         return_pointer = pointer
         if pointer >= len(self.order) - 1:
             return_pointer = 0
-            return return_pointer
         else:
-            return_pointer += 1
-            return return_pointer
+            if self.reverse:
+                return_pointer += 1
+            else:
+                return_pointer -= 1
+        return return_pointer
 
-    def check_playing_card(self, message):
+    def check_playing_card(self, message: discord.Message) -> bool:
         content = message.content
-        if (message.author == self.waiting_for.user) and (content in self.waiting_for.deck or content == "draw"):
+        if ((message.author == self.waiting_for.user) and
+                (content in self.waiting_for.deck or content == "draw" or content == "skip")) or self.stop:
             self.playing_card = content
             return True
 
-    def check_wild_card_color(self, message):
+    def check_wild_card_color(self, message: discord.Message) -> bool:
         colors = ["red", "yellow", "green", "blue"]
         if message.author == self.waiting_for.user and message.content in colors:
             self.color_change = message.content
             return True
 
-    def deck_to_emoji(self, player):
+    def deck_to_emoji(self, player: Player) -> str:
         to_send = ""
         if not player.deck:
             return "Your deck is empty"
@@ -223,10 +248,3 @@ class Uno:
             for card in player.deck:
                 to_send += str(self.CARD_INFO[card][1])
             return to_send
-
-
-class Player:
-
-    def __init__(self, user):
-        self.deck = []
-        self.user = user
