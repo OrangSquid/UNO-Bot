@@ -28,7 +28,7 @@ async def look_for_player(caller):
     # Looks if the caller of either join or play_uno is already in a game to avoid confusion in DMs with the bot
     for game in playing.values():
         for player in game:
-            if player == caller:
+            if player.user == caller:
                 return True
     for lobby in waiting.values():
         for player in lobby:
@@ -38,7 +38,8 @@ async def look_for_player(caller):
         return False
 
 
-@uno_bot.command()
+@uno_bot.command(help="Lets you create a new lobby for a UNO game")
+@commands.guild_only()
 async def play(ctx):
     # Checks if there's already a game waiting to start
     # If not, make a new one
@@ -63,7 +64,8 @@ async def play(ctx):
         await ctx.send(":x: There's already a game waiting to start or one is already on course")
 
 
-@uno_bot.command()
+@uno_bot.command(help="Lets you join the current UNO lobby in your server")
+@commands.guild_only()
 async def join(ctx):
     try:
         if ctx.author in waiting[ctx.guild]:
@@ -71,14 +73,19 @@ async def join(ctx):
         elif await look_for_player(ctx.author):
             await ctx.send(":x: You are already in a game in this or in another server!")
         else:
-            waiting[ctx.guild].append(ctx.author)
-            await ctx.send(
-                ":white_check_mark: {} has joined the game ({}/6)".format(ctx.author.mention, len(waiting[ctx.guild])))
+            if len(waiting[ctx.guild]) != 6:
+                waiting[ctx.guild].append(ctx.author)
+                await ctx.send(
+                    ":white_check_mark: {} has joined the game ({}/6)".format(ctx.author.mention,
+                                                                              len(waiting[ctx.guild])))
+            else:
+                await ctx.send(":x: The game is already full")
     except KeyError:
         await ctx.send(":x: There are no current games waiting to start")
 
 
-@uno_bot.command()
+@uno_bot.command(help="If there's a lobby with enough people in it, then this command will start the game")
+@commands.guild_only()
 async def start(ctx):
     try:
         if len(waiting[ctx.guild]) == 1:
@@ -88,22 +95,28 @@ async def start(ctx):
             for player in waiting[ctx.guild]:
                 players.append(uno_core.Player(player))
             game = uno_core.Uno(players, CARD_INFO, ctx.channel, uno_bot)
-            playing[ctx.guild] = waiting[ctx.guild]
+            playing[ctx.guild] = game
             waiting.pop(ctx.guild)
             await game.play_game()
-            print("the fuck")
             playing.pop(ctx.guild)
     except KeyError:
         await ctx.send(":x: There's no game to start!")
 
 
-@uno_bot.command()
-async def exit_waiting(ctx):
-    pass
+@uno_bot.command(help="Lets you leave the lobby you're in")
+@commands.guild_only()
+async def leave(ctx):
+    try:
+        waiting[ctx.guild].remove(ctx.author)
+        await ctx.send(":white_check_mark: {.author.mention} "
+                       "has been removed from the game ({}/6)".format(ctx, len(waiting[ctx.guild])))
+    except KeyError:
+        await ctx.send(":x: You are not waiting for any game!")
 
 
-@uno_bot.command()
-async def stop_waiting(ctx):
+@uno_bot.command(help="Lets you stop the lobby or the game you're playing")
+@commands.guild_only()
+async def stop(ctx):
     try:
         waiting.pop(ctx.guild)
         await ctx.send(":grey_exclamation: Your game has been cancelled")
@@ -112,6 +125,16 @@ async def stop_waiting(ctx):
 
 
 @uno_bot.command()
+@commands.guild_only()
+async def stop_playing(ctx):
+    try:
+        playing[ctx.guild].stop = True
+        await ctx.send("The game will stop after next player's turn")
+    except KeyError:
+        await ctx.send(":x: There are no games to stop")
+
+
+@uno_bot.command(enabled=False)
 async def settings(ctx):
     pass
 

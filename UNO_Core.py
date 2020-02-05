@@ -23,6 +23,7 @@ class Uno:
         self.waiting_for = None  # The current player's turn
         self.playing_card = None  # Holds the card to be played temporarily for checking
         self.color_change = None  # Holds the color information for change if wild card is used
+        self.stop = False
         self.pointer = 0
         self.played_cards = []
         self.COLOR_TO_DECIMAL = {
@@ -61,6 +62,10 @@ class Uno:
                 embed_order.set_thumbnail(url=str(player.user.avatar_url))
             embed_order.description += str(player.user) + "\n"
             first = False
+        embed_order.description += "\n*To play your cards in your DMs with the bot or in this channel use: " \
+                                   "\n\"color (red, yellow, green, blue, wild) \n(space) \nsymbol/number(skip, " \
+                                   "reverse, plus, 0, 1, ...)\"*\n**To use a wild card, just use \"wild card\"\nTo " \
+                                   "use a wild 4+, just use \"wild plus\"** "
         await self.channel.send(embed=embed_order)
 
         embed_on_table = discord.Embed(color=self.COLOR_TO_DECIMAL[self.on_table.split()[0]],
@@ -73,11 +78,15 @@ class Uno:
         embed_on_table.set_footer(text="UNO game at \"{}\"".format(self.channel.guild))
         await self.channel.send(embed=embed_on_table)
 
+        # Send the cards at the beginning to each player
         for player in self.order:
             await player.user.send(self.deck_to_emoji(player))
 
-        drew_card = False
+        drew_card = False  # Tells if the player drew a card in the next turn loop
         while len(self.order) != 1:
+            if self.stop:
+                await self.channel.send("The game will now stop")
+                return
             player = self.order[self.pointer]
             embed_turn = discord.Embed(description="")
             embed_turn.set_author(name="{} turn".format(player.user), icon_url=str(player.user.avatar_url))
@@ -86,18 +95,20 @@ class Uno:
             if drew_card:
                 embed_turn.description += "{} drew a card\n".format(player.user)
 
-            # await self.channel.send("Your turn: {.user.mention}".format(player))
             self.waiting_for = player
             # Waits for the message from the player, the check function also changes self.playing_card
             await self.bot.wait_for("message", check=self.check_playing_card)
             # Makes the card on the table a list for easier checking with indexes
             list_on_table = self.on_table.split()
 
-            # Check card sent in DMs:
+            # Check card sent in DMs or guild:
 
             # Wild Card
             if self.playing_card.startswith("wild"):
                 embed_turn = await self.played_card(player, True, embed_turn)
+                # Wild 4+
+                if self.playing_card.endswith("plus"):
+                    embed = await self.draw_card(embed_turn, 4)
 
             # Normal Card
             elif self.playing_card.startswith(list_on_table[0]) or self.playing_card.endswith(list_on_table[1]):
@@ -108,7 +119,7 @@ class Uno:
                     embed_turn.description += "\n{} turn is skipped".format(self.order[self.pointer].user)
                 # 2+ Card
                 elif self.playing_card.endswith("plus"):
-                    embed_turn = self.draw_card(embed_turn, 2)
+                    embed_turn = await self.draw_card(embed_turn, 2)
                 # Reverse Card
                 elif self.playing_card.endswith("reverse"):
                     if len(self.order) == 2:
@@ -120,9 +131,12 @@ class Uno:
 
             # Draw a Card
             elif self.playing_card == "draw":
+                if not self.drawing_deck:
+                    self.drawing_deck = random.shuffle(self.played_card)
                 drawn_card = self.drawing_deck.pop(0)
                 player.deck.append(drawn_card)
-                if drawn_card.startswith(list_on_table[0]) or drawn_card.endswith(list_on_table[1]) or drawn_card.startswith("wild"):
+                if drawn_card.startswith(list_on_table[0]) or \
+                        drawn_card.endswith(list_on_table[1]) or drawn_card.startswith("wild"):
                     await player.user.send("You can play the card you drew!")
                     await player.user.send(self.deck_to_emoji(player))
                     drew_card = True
@@ -159,8 +173,6 @@ class Uno:
             await player.user.send("Choose your color (red, yellow, green, blue)")
             # Waits for the message and self.color_change is also changed in the check function
             await self.bot.wait_for("message", check=self.check_wild_card_color)
-            if self.playing_card.endswith("plus"):
-                embed = self.draw_card(embed, 4)
             self.playing_card = "{} {}".format(self.color_change, self.playing_card)
             self.on_table = "{} wild".format(self.color_change)
             self.color_change = None
@@ -171,13 +183,15 @@ class Uno:
         self.played_cards.append(self.playing_card)
         return embed
 
-    def draw_card(self, embed, cards_to_draw):
-        temp_pointer = self.increment_pointer(self.pointer)
+    async def draw_card(self, embed, cards_to_draw):
+        self.pointer = self.increment_pointer(self.pointer)
         for x in range(cards_to_draw):
-            self.order[temp_pointer].deck.append(self.drawing_deck.pop(0))
-        embed.description += "\n{} drew {} and their turn is skipped".format(self.order[temp_pointer].user,
+            if not self.drawing_deck:
+                self.drawing_deck = random.shuffle(self.played_card)
+            self.order[self.pointer].deck.append(self.drawing_deck.pop(0))
+        await self.order[self.pointer].user.send(self.deck_to_emoji(self.order[self.pointer]))
+        embed.description += "\n{} drew {} and their turn is skipped".format(self.order[self.pointer].user,
                                                                              cards_to_draw)
-        self.pointer = temp_pointer
         return embed
 
     def increment_pointer(self, pointer: int) -> int:
