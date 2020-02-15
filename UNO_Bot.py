@@ -16,12 +16,16 @@ logger.addHandler(handler)
 
 # TODO: add a way to change the command prefix (maybe?)
 async def prefix(bot, message) -> str:
-    return "uno "
+    if message.guild.id == 556652655397830657:
+        return "owo "
+    else:
+        return "uno "
 
 
 # Global variables to keep track of games and who's waiting
 waiting: Dict[discord.Guild, List[discord.User]] = {}
 playing: Dict[discord.Guild, uno_core.Uno] = {}
+definitions: Dict[Any, Any] = {}
 CARD_INFO: Dict[str, List[Any]] = {}
 uno_bot = commands.Bot(command_prefix=prefix)
 
@@ -100,7 +104,7 @@ async def start(ctx):
             players = []
             for player in waiting[ctx.guild]:
                 players.append(uno_core.Player(player))
-            game = uno_core.Uno(players, CARD_INFO, ctx.channel, uno_bot)
+            game = uno_core.Uno(players, definitions[str(ctx.guild.id)], CARD_INFO, ctx.channel, uno_bot)
             playing[ctx.guild] = game
             waiting.pop(ctx.guild)
             await game.play_game()
@@ -133,20 +137,84 @@ async def stop(ctx):
             await ctx.send(":x: There are no games to stop")
 
 
-@uno_bot.command(enabled=False)
+@uno_bot.group()
 async def settings(ctx):
-    pass
+    if ctx.invoked_subcommand is None:
+        await ctx.send(":x: Choose a setting! Please use uno help to get a full list of settings")
+
+
+@settings.command()
+async def decks(ctx, number: int):
+    await change_settings("decks", number, ctx.guild.id)
+    await ctx.send("The number of decks has changed to {}".format(number))
+
+
+@settings.command()
+async def initial_cards(ctx, number: int):
+    await change_settings("initial_cards", number, ctx.guild.id)
+    await ctx.send("The number of initial cards to give to each player has changed to {}".format(number))
+
+
+@settings.command()
+async def draw_skip(ctx, change: bool):
+    await change_settings("draw_skip", change, ctx.guild.id)
+    if bool:
+        await ctx.send("You must now skip after a 2+ or 4+ card")
+    else:
+        await ctx.send("You can now play after a 2+ or 4+ card")
+
+
+@settings.command()
+async def must_play(ctx, change: bool):
+    await change_settings("must_play", change, ctx.guild.id)
+    if bool:
+        await ctx.send("You can now play after drawing a card you can play")
+    else:
+        await ctx.send("You must now skip a turn after drawing a card")
+
+
+@settings.command()
+async def stacking(ctx, change: bool):
+    await change_settings("stacking", change, ctx.guild.id)
+    if bool:
+        await ctx.send("You can now stack 2+'s")
+    else:
+        await ctx.send("You can't stack 2+'s")
+
+
+async def change_settings(setting: str, to_change, guild_id: int):
+    definitions[str(guild_id)][setting] = to_change
+    with open("definitions.json", "w") as file:
+        json.dump(definitions, file, indent="\t")
 
 
 @uno_bot.event
 async def on_ready():
+    global definitions
     global CARD_INFO
-    with open("settings.json") as settings_json:
-        temp_info = json.load(settings_json)
-        for x in zip(temp_info["CARD INFO"].keys(), temp_info["CARD INFO"].values()):
-            temp_info["CARD INFO"][x[0]][1] = uno_bot.get_emoji(x[1][1])
-        CARD_INFO = temp_info["CARD INFO"]
+    # Loading the card info file
+    with open("info.json", "r") as file:
+        CARD_INFO = json.load(file)
+        for x in zip(CARD_INFO.keys(), CARD_INFO.values()):
+            CARD_INFO[x[0]][1] = uno_bot.get_emoji(x[1][1])
+    # Loading the definitions file and filling in any guild missing
+    with open("definitions.json", "r") as file:
+        definitions = json.load(file)
+        for guild in uno_bot.guilds:
+            try:
+                print(definitions[str(guild.id)])
+            except KeyError:
+                definitions[guild.id] = definitions["default"]
+    with open("definitions.json", "w") as file:
+        json.dump(definitions, file, indent="\t")
     print("We are ready to roll!")
+
+
+@uno_bot.event
+async def on_guild_join(guild):
+    definitions[guild.id] = definitions["default"]
+    with open("definitions.json.json", "w") as file:
+        json.dump(definitions, file, indent="\t")
 
 
 def main():
