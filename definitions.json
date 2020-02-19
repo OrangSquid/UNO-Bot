@@ -15,10 +15,10 @@
 	},
 	"477149849632899072": {
 		"decks": 1,
-		"initial_cards": 999,
+		"initial_cards": 7,
 		"draw_skip": true,
 		"must_play": false,
-		"stacking": false
+		"stacking": true
 	},
 	"632268279225909258": {
 		"decks": 1,

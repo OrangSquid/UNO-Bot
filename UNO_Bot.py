@@ -14,7 +14,6 @@ handler.setFormatter(logging.Formatter('[%(asctime)s]: %(levelname)s: %(name)s: 
 logger.addHandler(handler)
 
 
-# TODO: add a way to change the command prefix (maybe?)
 async def prefix(bot, message) -> str:
     if message.guild.id == 556652655397830657:
         return "owo "
@@ -25,6 +24,7 @@ async def prefix(bot, message) -> str:
 # Global variables to keep track of games and who's waiting
 waiting: Dict[discord.Guild, List[discord.User]] = {}
 playing: Dict[discord.Guild, uno_core.Uno] = {}
+# Keep track of definitions and card info like the emojis and images
 definitions: Dict[Any, Any] = {}
 CARD_INFO: Dict[str, List[Any]] = {}
 uno_bot = commands.Bot(command_prefix=prefix)
@@ -127,11 +127,13 @@ async def leave(ctx):
 @uno_bot.command(help="Lets you stop the lobby or the game you're playing")
 @commands.guild_only()
 async def stop(ctx):
+    print("ah fuck")
     try:
         waiting.pop(ctx.guild)
         await ctx.send(":grey_exclamation: Your game has been cancelled")
     except KeyError:
         try:
+            await ctx.send("The game will stop after next player's turn")
             playing[ctx.guild].stop = True
         except KeyError:
             await ctx.send(":x: There are no games to stop")
