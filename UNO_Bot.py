@@ -9,34 +9,32 @@ from typing import Dict, List, Any
 # Setting up the logger function for the library
 logger = logging.getLogger('discord')
 logger.setLevel(logging.DEBUG)
-handler = logging.FileHandler(filename='discord.log', encoding='utf-8', mode='w')
-handler.setFormatter(logging.Formatter('[%(asctime)s]: %(levelname)s: %(name)s: %(message)s'))
+handler = logging.FileHandler(
+    filename='discord.log', encoding='utf-8', mode='w')
+handler.setFormatter(logging.Formatter(
+    '[%(asctime)s]: %(levelname)s: %(name)s: %(message)s'))
 logger.addHandler(handler)
 
 
 async def prefix(bot, message) -> str:
-    if message.guild.id == 556652655397830657:
-        return "owo "
-    else:
-        return "uno "
+    return "uno "
 
-
-# Global variables to keep track of games and who's waiting
-waiting: Dict[discord.Guild, List[discord.User]] = {}
-playing: Dict[discord.Guild, uno_core.Uno] = {}
-# Keep track of definitions and card info like the emojis and images
-definitions: Dict[Any, Any] = {}
+# Global variables to keep track of games and who's WAITING
+WAITING: Dict[discord.Guild, List[discord.User]] = {}
+PLAYING: Dict[discord.Guild, uno_core.Uno] = {}
+# Keep track of DEFINITIONS and card info like the emojis and images
+DEFINITIONS: Dict[Any, Any] = {}
 CARD_INFO: Dict[str, List[Any]] = {}
 uno_bot = commands.Bot(command_prefix=prefix)
 
 
 async def look_for_player(caller: discord.User) -> bool:
     # Looks if the caller of either join or play_uno is already in a game to avoid confusion in DMs with the bot
-    for game in playing.values():
+    for game in PLAYING.values():
         for player in game.order:
             if player.user == caller:
                 return True
-    for lobby in waiting.values():
+    for lobby in WAITING.values():
         for player in lobby:
             if player == caller:
                 return True
@@ -47,19 +45,19 @@ async def look_for_player(caller: discord.User) -> bool:
 @uno_bot.command(help="Lets you create a new lobby for a UNO game")
 @commands.guild_only()
 async def play(ctx):
-    # Checks if there's already a game waiting to start
+    # Checks if there's already a game WAITING to start
     # If not, make a new one
     try:
-        print(waiting[ctx.guild])
+        WAITING[ctx.guild]
     except KeyError:
         try:
-            print(playing[ctx.guild])
+            PLAYING[ctx.guild]
         except KeyError:
             if await look_for_player(ctx.author):
                 await ctx.send(":x: You are already in a game in this or in another server!")
             else:
-                waiting[ctx.guild] = [ctx.author]
-                embed_to_send = discord.Embed(title="Game Waiting",
+                WAITING[ctx.guild] = [ctx.author]
+                embed_to_send = discord.Embed(title="Game WAITING",
                                               description="If you want to join the game, use uno join."
                                                           "\nOnce you want to start, use uno start."
                                                           "\nUp to six players can join.",
@@ -68,47 +66,49 @@ async def play(ctx):
                                          icon_url=str(ctx.author.avatar_url))
                 embed_to_send.set_thumbnail(url="https://raw.githubusercontent.com/OrangSquid/UNO-Bot/master/deck"
                                                 "/logo.png")
-                embed_to_send.set_footer(text="UNO Game at \"{.guild}\"".format(ctx))
+                embed_to_send.set_footer(
+                    text="UNO Game at \"{.guild}\"".format(ctx))
                 await ctx.send(embed=embed_to_send)
     else:
-        await ctx.send(":x: There's already a game waiting to start or one is already on course")
+        await ctx.send(":x: There's already a game WAITING to start or one is already on course")
 
 
 @uno_bot.command(help="Lets you join the current UNO lobby in your server")
 @commands.guild_only()
 async def join(ctx):
     try:
-        if ctx.author in waiting[ctx.guild]:
-            await ctx.send(":x: You are already waiting for the game")
+        if ctx.author in WAITING[ctx.guild]:
+            await ctx.send(":x: You are already WAITING for the game")
         elif await look_for_player(ctx.author):
             await ctx.send(":x: You are already in a game in this or in another server!")
         else:
-            if len(waiting[ctx.guild]) != 6:
-                waiting[ctx.guild].append(ctx.author)
+            if len(WAITING[ctx.guild]) != 20:
+                WAITING[ctx.guild].append(ctx.author)
                 await ctx.send(
-                    ":white_check_mark: {} has joined the game ({}/6)".format(ctx.author.mention,
-                                                                              len(waiting[ctx.guild])))
+                    ":white_check_mark: {} has joined the game ({}/20)".format(ctx.author.mention,
+                                                                               len(WAITING[ctx.guild])))
             else:
                 await ctx.send(":x: The game is already full")
     except KeyError:
-        await ctx.send(":x: There are no current games waiting to start")
+        await ctx.send(":x: There are no current games WAITING to start")
 
 
 @uno_bot.command(help="If there's a lobby with enough people in it, then this command will start the game")
 @commands.guild_only()
 async def start(ctx):
     try:
-        if len(waiting[ctx.guild]) == 1:
+        if len(WAITING[ctx.guild]) == 1:
             await ctx.send(":grey_exclamation: There aren't enough players to start. You need at least 2.")
         else:
             players = []
-            for player in waiting[ctx.guild]:
+            for player in WAITING[ctx.guild]:
                 players.append(uno_core.Player(player))
-            game = uno_core.Uno(players, definitions[str(ctx.guild.id)], CARD_INFO, ctx.channel, uno_bot)
-            playing[ctx.guild] = game
-            waiting.pop(ctx.guild)
+            game = uno_core.Uno(players, DEFINITIONS[str(
+                ctx.guild.id)], CARD_INFO, ctx.channel, uno_bot)
+            PLAYING[ctx.guild] = game
+            WAITING.pop(ctx.guild)
             await game.play_game()
-            playing.pop(ctx.guild)
+            PLAYING.pop(ctx.guild)
     except KeyError:
         await ctx.send(":x: There's no game to start!")
 
@@ -117,26 +117,36 @@ async def start(ctx):
 @commands.guild_only()
 async def leave(ctx):
     try:
-        waiting[ctx.guild].remove(ctx.author)
+        WAITING[ctx.guild].remove(ctx.author)
         await ctx.send(":white_check_mark: {.author.mention} "
-                       "has been removed from the game ({}/6)".format(ctx, len(waiting[ctx.guild])))
+                       "has been removed from the game ({}/20)".format(ctx, len(WAITING[ctx.guild])))
     except KeyError:
-        await ctx.send(":x: You are not waiting for any game!")
+        await ctx.send(":x: You are not WAITING for any game!")
 
 
-@uno_bot.command(help="Lets you stop the lobby or the game you're playing")
+@uno_bot.command(help="Lets you stop the lobby or the game you're PLAYING")
 @commands.guild_only()
 async def stop(ctx):
-    print("ah fuck")
     try:
-        waiting.pop(ctx.guild)
+        WAITING.pop(ctx.guild)
         await ctx.send(":grey_exclamation: Your game has been cancelled")
     except KeyError:
         try:
             await ctx.send("The game will stop after next player's turn")
-            playing[ctx.guild].stop = True
+            PLAYING[ctx.guild].stop = True
         except KeyError:
             await ctx.send(":x: There are no games to stop")
+
+
+@uno_bot.command(help="Lets you stop the lobby or the game you're PLAYING")
+@commands.guild_only()
+async def debug(ctx):
+    player = uno_core.Player(ctx.author)
+    game = uno_core.Uno([player, player], DEFINITIONS[str(
+        ctx.guild.id)], CARD_INFO, ctx.channel, uno_bot)
+    PLAYING[ctx.guild] = game
+    await game.play_game()
+    PLAYING.pop(ctx.guild)
 
 
 @uno_bot.group()
@@ -160,7 +170,7 @@ async def initial_cards(ctx, number: int):
 @settings.command()
 async def draw_skip(ctx, change: bool):
     await change_settings("draw_skip", change, ctx.guild.id)
-    if bool:
+    if change:
         await ctx.send("You must now skip after a 2+ or 4+ card")
     else:
         await ctx.send("You can now play after a 2+ or 4+ card")
@@ -169,7 +179,7 @@ async def draw_skip(ctx, change: bool):
 @settings.command()
 async def must_play(ctx, change: bool):
     await change_settings("must_play", change, ctx.guild.id)
-    if bool:
+    if change:
         await ctx.send("You can now play after drawing a card you can play")
     else:
         await ctx.send("You must now skip a turn after drawing a card")
@@ -178,45 +188,45 @@ async def must_play(ctx, change: bool):
 @settings.command()
 async def stacking(ctx, change: bool):
     await change_settings("stacking", change, ctx.guild.id)
-    if bool:
+    if change:
         await ctx.send("You can now stack 2+'s")
     else:
         await ctx.send("You can't stack 2+'s")
 
 
 async def change_settings(setting: str, to_change, guild_id: int):
-    definitions[str(guild_id)][setting] = to_change
-    with open("definitions.json", "w") as file:
-        json.dump(definitions, file, indent="\t")
+    DEFINITIONS[str(guild_id)][setting] = to_change
+    with open("DEFINITIONS.json", "w") as file:
+        json.dump(DEFINITIONS, file, indent="\t")
 
 
 @uno_bot.event
 async def on_ready():
-    global definitions
+    global DEFINITIONS
     global CARD_INFO
     # Loading the card info file
     with open("info.json", "r") as file:
         CARD_INFO = json.load(file)
         for x in zip(CARD_INFO.keys(), CARD_INFO.values()):
             CARD_INFO[x[0]][1] = uno_bot.get_emoji(x[1][1])
-    # Loading the definitions file and filling in any guild missing
-    with open("definitions.json", "r") as file:
-        definitions = json.load(file)
+    # Loading the DEFINITIONS file and filling in any guild missing
+    with open("DEFINITIONS.json", "r") as file:
+        DEFINITIONS = json.load(file)
         for guild in uno_bot.guilds:
             try:
-                print(definitions[str(guild.id)])
+                DEFINITIONS[str(guild.id)]
             except KeyError:
-                definitions[guild.id] = definitions["default"]
-    with open("definitions.json", "w") as file:
-        json.dump(definitions, file, indent="\t")
+                DEFINITIONS[guild.id] = DEFINITIONS["default"]
+    with open("DEFINITIONS.json", "w") as file:
+        json.dump(DEFINITIONS, file, indent="\t")
     print("We are ready to roll!")
 
 
 @uno_bot.event
 async def on_guild_join(guild):
-    definitions[guild.id] = definitions["default"]
-    with open("definitions.json.json", "w") as file:
-        json.dump(definitions, file, indent="\t")
+    DEFINITIONS[guild.id] = DEFINITIONS["default"]
+    with open("DEFINITIONS.json.json", "w") as file:
+        json.dump(DEFINITIONS, file, indent="\t")
 
 
 def main():

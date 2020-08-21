@@ -40,5 +40,12 @@
 		"draw_skip": true,
 		"must_play": false,
 		"stacking": false
+	},
+	"690288190770249748": {
+		"decks": 1,
+		"initial_cards": 7,
+		"draw_skip": true,
+		"must_play": false,
+		"stacking": false
 	}
 }
