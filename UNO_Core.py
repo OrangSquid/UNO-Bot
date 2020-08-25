@@ -114,6 +114,7 @@ class Uno:
         # The loop for turns
         while len(self.order) != 1:
             player = self.order[self.pointer]
+            self.waiting_for = player
             embed_turn = discord.Embed(description="")
             embed_turn.set_author(name="{} turn".format(
                 player.user), icon_url=str(player.user.avatar_url))
@@ -124,7 +125,6 @@ class Uno:
                 embed_turn.description += "{} drew a card\n".format(
                     player.user)
 
-            self.waiting_for = player
             # Waits for the message from the player, the check function also changes self.playing_card
             await self.bot.wait_for("message", check=self.check_playing_card)
             # Makes the card on the table a list for easier checking with indexes
@@ -142,7 +142,7 @@ class Uno:
                 embed_turn = await self.played_card(player, True, embed_turn)
                 # Wild 4+
                 if self.playing_card.endswith('plus'):
-                    embed_turn = await self.draw_card(embed_turn, 4)
+                    embed_turn = await self.draw_card_after_plus(embed_turn, 4)
 
             # Normal Card
             elif self.playing_card.startswith(list_on_table[0]) or self.playing_card.endswith(list_on_table[1]):
@@ -155,7 +155,7 @@ class Uno:
                 # 2+ Card
                 elif self.playing_card.endswith('plus'):
                     self.cards_to_draw += 2
-                    embed_turn = await self.draw_card(embed_turn, self.cards_to_draw)
+                    embed_turn = await self.draw_card_after_plus(embed_turn, self.cards_to_draw)
                 # Reverse Card
                 elif self.playing_card.endswith('reverse'):
                     if len(self.order) == 2:
@@ -187,7 +187,7 @@ class Uno:
                                                  "/card%20draw.png")
 
             # Skip turn in case you got a card you can play
-            elif self.playing_card == "skip" and drew_card:
+            elif self.playing_card == "skip" and drew_card and self.definitions["must_play"]:
                 embed_turn.set_thumbnail(url="https://raw.githubusercontent.com/OrangSquid/UNO-Bot/master/deck"
                                              "/card%20draw.png")
 
@@ -236,7 +236,7 @@ class Uno:
         self.played_cards.append(self.playing_card)
         return embed
 
-    async def draw_card(self, embed: discord.Embed(), cards_to_draw: int) -> discord.Embed:
+    async def draw_card_after_plus(self, embed: discord.Embed(), cards_to_draw: int) -> discord.Embed:
         pointer_np = await self.increment_pointer(self.pointer)
         # Stacking definition
         if self.definitions["stacking"]:
