@@ -187,7 +187,7 @@ class Uno:
                                                  "/card%20draw.png")
 
             # Skip turn in case you got a card you can play
-            elif self.playing_card == "skip" and drew_card and self.definitions["must_play"]:
+            elif self.playing_card == "skip" and drew_card and not self.definitions["must_play"]:
                 embed_turn.set_thumbnail(url="https://raw.githubusercontent.com/OrangSquid/UNO-Bot/master/deck"
                                              "/card%20draw.png")
 
