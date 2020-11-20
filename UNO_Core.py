@@ -88,7 +88,7 @@ class Uno:
             embed_order.description += str(player.user) + "\n"
             first = False
         embed_order.description += "\n*To play your cards in your DMs with the bot or in this channel use: " \
-                                   "\n\"color (red, yellow, green, blue, wild) \n(space) \nsymbol/number(skip, " \
+                                   "\n\"color (red, yellow, green, blue, wild)\n (space) \nsymbol/number(skip, " \
                                    "reverse, plus, 0, 1, ...)\"*\n**To use a wild card, just use \"wild card\"\nTo " \
                                    "use a wild 4+, just use \"wild plus\"** "
         await self.channel.send(embed=embed_order)
@@ -208,8 +208,7 @@ class Uno:
                 self.order[self.pointer].user)
             embed_turn.description += self.deck_to_emoji(self.order[self.pointer], False)
             if self.playing_card != 'draw' and self.playing_card != 'skip':
-                embed_turn.color = COLOR_TO_DECIMAL[self.playing_card.split()[
-                    0]]
+                embed_turn.color = COLOR_TO_DECIMAL[self.playing_card.split()[0]]
             embed_turn.timestamp = datetime.datetime.now()
             drew_card = False
             await self.channel.send(embed=embed_turn)
@@ -218,6 +217,7 @@ class Uno:
             await self.channel.send("The game has ended!")
 
     async def played_card(self, player: Player, is_wild: bool, embed: discord.Embed()) -> discord.Embed:
+        # Sets the card on the table and makes an embed to send
         player.deck.remove(self.playing_card)
         if is_wild:
             await player.user.send("Choose your color (red, yellow, green, blue)")
@@ -247,7 +247,7 @@ class Uno:
             if not self.drawing_deck:
                 self.drawing_deck = random.sample(self.played_cards, k=len(self.played_cards))
             self.order[pointer_np].deck.append(self.drawing_deck.pop(0))
-        await self.order[self.pointer].user.send(self.deck_to_emoji(self.order[self.pointer], True))
+        await self.order[pointer_np].user.send(self.deck_to_emoji(self.order[self.pointer], True))
         self.cards_to_draw = 0
         # Draw skip definition
         if self.definitions["draw_skip"]:
@@ -284,8 +284,7 @@ class Uno:
                 return True
 
     def check_wild_card_color(self, message: discord.Message) -> bool:
-        colors = ('red', 'yellow', 'green', 'blue')
-        if message.author == self.waiting_for.user and message.content in colors:
+        if message.author == self.waiting_for.user and message.content in COLOR_TO_DECIMAL.keys():
             self.color_change = message.content
             return True
 
