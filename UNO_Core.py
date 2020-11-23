@@ -68,6 +68,7 @@ class Uno:
         while validate_front('wild') or validate_back('reverse') or validate_back('skip') or validate_back('plus'):
             self.drawing_deck.append(self.on_table)
             self.on_table = self.drawing_deck.pop(0)
+            print(self.on_table)
 
         for player in self.order:
             for x in range(0, self.definitions["initial_cards"]):
@@ -170,7 +171,8 @@ class Uno:
                     await player.user.send("You can't draw two cards in one turn!")
                     continue
                 if not self.drawing_deck:
-                    self.drawing_deck = random.sample(self.played_cards, k=len(self.played_cards))
+                    self.drawing_deck = random.sample(
+                        self.played_cards, k=len(self.played_cards))
                 drawn_card = self.drawing_deck.pop(0)
                 player.deck.append(drawn_card)
                 if drawn_card.startswith(list_on_table[0]) or \
@@ -200,15 +202,17 @@ class Uno:
             # Check if the current player has been left without cards
             if not player.deck:
                 self.order.remove(player)
-                embed_turn.description += "\n{.user.mention} has no cards! They are leaving the game!".format(
-                    player)
+                embed_turn.description += "\n{} has no cards! They are leaving the game!".format(
+                    str(player.user))
             # Add one to the pointer (this after the possible player's removal to prevent bugs)
             self.pointer = await self.increment_pointer(self.pointer)
             embed_turn.description += "\nYour turn now **{}**\n".format(
                 self.order[self.pointer].user)
-            embed_turn.description += self.deck_to_emoji(self.order[self.pointer], False)
+            embed_turn.description += self.deck_to_emoji(
+                self.order[self.pointer], False)
             if self.playing_card != 'draw' and self.playing_card != 'skip':
-                embed_turn.color = COLOR_TO_DECIMAL[self.playing_card.split()[0]]
+                embed_turn.color = COLOR_TO_DECIMAL[self.playing_card.split()[
+                    0]]
             embed_turn.timestamp = datetime.datetime.now()
             drew_card = False
             await self.channel.send(embed=embed_turn)
@@ -245,9 +249,10 @@ class Uno:
                     return embed
         for x in range(cards_to_draw):
             if not self.drawing_deck:
-                self.drawing_deck = random.sample(self.played_cards, k=len(self.played_cards))
+                self.drawing_deck = random.sample(
+                    self.played_cards, k=len(self.played_cards))
             self.order[pointer_np].deck.append(self.drawing_deck.pop(0))
-        await self.order[pointer_np].user.send(self.deck_to_emoji(self.order[self.pointer], True))
+        await self.order[pointer_np].user.send(self.deck_to_emoji(self.order[pointer_np], True))
         self.cards_to_draw = 0
         # Draw skip definition
         if self.definitions["draw_skip"]:
