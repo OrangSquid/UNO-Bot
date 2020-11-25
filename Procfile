@@ -1,1 +1,1 @@
-worker: python "uno_core.py"
+release: python .\uno_core.py
