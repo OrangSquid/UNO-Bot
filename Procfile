@@ -1,1 +1,1 @@
-release: python .\uno_core.py
+release: python app\uno_core.py
