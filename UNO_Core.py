@@ -63,9 +63,7 @@ class Uno:
         self.on_table = self.drawing_deck.pop(0)
         # Validation of the selected card on table
         # Wild, reverse, skip and +2 cards are invalid to start a game of UNO
-        validate_back = self.on_table.endswith
-        validate_front = self.on_table.startswith
-        while validate_front('wild') or validate_back('reverse') or validate_back('skip') or validate_back('plus'):
+        while self.on_table.startswith('wild') or self.on_table.endswith('reverse') or self.on_table.endswith('skip') or self.on_table.endswith('plus'):
             self.drawing_deck.append(self.on_table)
             self.on_table = self.drawing_deck.pop(0)
             print(self.on_table)
