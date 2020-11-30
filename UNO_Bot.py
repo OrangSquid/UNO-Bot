@@ -3,7 +3,7 @@ import logging
 from typing import Any, Dict, List
 
 import discord
-import uno_core
+import UNO_Core
 from discord.ext import commands
 
 # Setting up the logger function for the library
@@ -21,7 +21,7 @@ async def prefix(bot, message) -> str:
 
 # Global variables to keep track of games and who's WAITING
 WAITING: Dict[discord.Guild, List[discord.User]] = {}
-PLAYING: Dict[discord.Guild, uno_core.Uno] = {}
+PLAYING: Dict[discord.Guild, UNO_Core.Uno] = {}
 # Keep track of DEFINITIONS and card info like the emojis and images
 EMBEDS_DICT = {}
 DEFINITIONS: Dict[Any, Any] = {}
@@ -62,8 +62,8 @@ async def start(ctx):
     if len(wait_list) == 1:
         await ctx.send("❕ There aren't enough players to start. You need at least 2.")
     else:
-        players = [uno_core.Player(player) for player in wait_list]
-        game = uno_core.Uno(players, DEFINITIONS[str(
+        players = [UNO_Core.Player(player) for player in wait_list]
+        game = UNO_Core.Uno(players, DEFINITIONS[str(
             ctx.guild.id)], CARD_INFO, ctx.channel, uno_bot)
         PLAYING[ctx.guild] = game
         WAITING.remove(ctx.guild)
@@ -131,8 +131,8 @@ async def stop(ctx):
 @uno_bot.command(help="Lets you stop the lobby or the game you're PLAYING")
 @commands.guild_only()
 async def debug(ctx):
-    player = uno_core.Player(ctx.author)
-    game = uno_core.Uno([player, player], DEFINITIONS[str(
+    player = UNO_Core.Player(ctx.author)
+    game = UNO_Core.Uno([player, player], DEFINITIONS[str(
         ctx.guild.id)], CARD_INFO, ctx.channel, uno_bot)
     PLAYING[ctx.guild] = game
     await game.play_game()
