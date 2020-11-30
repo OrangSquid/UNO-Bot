@@ -54,7 +54,7 @@ class Uno:
         self.definitions = definitions
         self.card_info = card_info
         self.drawing_deck = []
-        for x in range(definitions["decks"]):
+        for _ in range(definitions["decks"]):
             for card in DECK:
                 self.drawing_deck.append(card)
             self.drawing_deck = random.sample(
@@ -69,7 +69,7 @@ class Uno:
             print(self.on_table)
 
         for player in self.order:
-            for x in range(0, self.definitions["initial_cards"]):
+            for _ in range(self.definitions["initial_cards"]):
                 player.deck.append(self.drawing_deck.pop(0))
 
     async def play_game(self) -> None:
@@ -208,7 +208,7 @@ class Uno:
                 self.order[self.pointer].user)
             embed_turn.description += self.deck_to_emoji(
                 self.order[self.pointer], False)
-            if self.playing_card != 'draw' and self.playing_card != 'skip':
+            if self.playing_card not in ['draw', 'skip']:
                 embed_turn.color = COLOR_TO_DECIMAL[self.playing_card.split()[
                     0]]
             embed_turn.timestamp = datetime.datetime.now()
@@ -245,7 +245,7 @@ class Uno:
             for card in self.order[pointer_np].deck:
                 if not card.startswith("wild") and card.endswith("plus"):
                     return embed
-        for x in range(cards_to_draw):
+        for _ in range(cards_to_draw):
             if not self.drawing_deck:
                 self.drawing_deck = random.sample(
                     self.played_cards, k=len(self.played_cards))
@@ -299,6 +299,6 @@ class Uno:
             for card in player.deck:
                 to_send += str(self.card_info[card][1])
         else:
-            for card in player.deck:
+            for _ in player.deck:
                 to_send += "<:back:746444081424760943>"
         return to_send

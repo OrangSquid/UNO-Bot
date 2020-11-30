@@ -1,4 +1,7 @@
+from asyncio.tasks import wait
 import logging
+
+from discord import guild
 import uno_core
 import discord
 import datetime
@@ -23,6 +26,7 @@ async def prefix(bot, message) -> str:
 WAITING: Dict[discord.Guild, List[discord.User]] = {}
 PLAYING: Dict[discord.Guild, uno_core.Uno] = {}
 # Keep track of DEFINITIONS and card info like the emojis and images
+EMBEDS_DICT = {}
 DEFINITIONS: Dict[Any, Any] = {}
 CARD_INFO: Dict[str, List[Any]] = {}
 uno_bot = commands.Bot(command_prefix=prefix)
@@ -31,101 +35,100 @@ uno_bot = commands.Bot(command_prefix=prefix)
 async def look_for_player(caller: discord.User) -> bool:
     # Looks if the caller of either join or play_uno is already in a game to avoid confusion in DMs with the bot
     for game in PLAYING.values():
-        for player in game.order:
-            if player.user == caller:
-                return True
-    for lobby in WAITING.values():
-        for player in lobby:
-            if player == caller:
-                return True
+        if caller in game.order:
+            return True
+    return any(caller in lobby for lobby in WAITING.values())
+
+async def join(ctx):
+    """
+    Tries to join the game waiting.
+
+    Else try to start it
+    """
+
+    wait_list = WAITING[ctx.guild]
+    if ctx.author not in wait_list and len(wait_list) < 6:
+        wait_list.append(ctx.author)
+        await ctx.send(f'✅ {ctx.author.mention} has joined the game ({len(wait_list)}/6)')
+    elif ctx.author == wait_list[0]:
+        start(ctx)
     else:
-        return False
+        await ctx.send('❌ You\'re already in the game or the lobby is full!\n❕ Please note the first caller of the play command should call it again to begin the game')
 
 
-@uno_bot.command(help="Lets you create a new lobby for a UNO game")
+async def start(ctx):
+    """
+    Starts the game provided there's one in WAITING
+    """
+
+    wait_list = WAITING[ctx.guild]
+    if len(wait_list) == 1:
+        await ctx.send("❕ There aren't enough players to start. You need at least 2.")
+    else:
+        players = [uno_core.Player(player) for player in wait_list]
+        game = uno_core.Uno(players, DEFINITIONS[str(
+            ctx.guild.id)], CARD_INFO, ctx.channel, uno_bot)
+        PLAYING[ctx.guild] = game
+        WAITING.remove(ctx.guild)
+        await game.play_game()
+        PLAYING.remove(ctx.guild)
+
+@uno_bot.command(help="Lets you create a new lobby for a UNO game, join the lobby and start the game")
 @commands.guild_only()
 async def play(ctx):
-    # Checks if there's already a game WAITING to start
-    # If not, make a new one
-    # Else if it is the first issuer of the command, start the game,
-    # Else join the game
+    """
+    Creates a game if there isn't one already waiting.
 
-    # Check if there's a game waiting
-    try:
-        WAITING[ctx.guild]
-    except KeyError:
-        # Check if there's a game in course
-        try:
-            PLAYING[ctx.guild]
-        # Join the game
-        except KeyError:
-            if await look_for_player(ctx.author):
-                await ctx.send(":x: You are already in a game in this or in another server!")
-            else:
-                WAITING[ctx.guild] = [ctx.author]
-                embed_to_send = discord.Embed(title="Game WAITING",
-                                              description="If you want to join the game, use uno play."
-                                                          "\nOnce you want to start, {} should use uno play."
-                                                          "\nUp to four players can join.".format(ctx.author),
-                                              timestamp=datetime.datetime.now())
-                embed_to_send.set_author(name="{.author} wants to start a game!".format(ctx),
-                                         icon_url=str(ctx.author.avatar_url))
-                embed_to_send.set_footer(
-                    text="UNO Game at \"{.guild}\"".format(ctx))
-                await ctx.send(embed=embed_to_send)
-        else:
-            print("There's a game in course in this server!")
-    # Make a game or join it
+    Else try to join the game already waiting.
+    """
+
+    guild_iswaiting = ctx.guild in WAITING
+    guild_isplaying = ctx.guiLd in PLAYING
+    caller_isplaying = look_for_player(ctx.author)
+
+    if guild_isplaying:
+        await ctx.send('❌ There\'s a game in course in this server!')
+    elif caller_isplaying:
+        await ctx.send('❌ You\'re already playing in another server!')
+    elif guild_iswaiting:
+        await join(ctx)
     else:
-        if ctx.author == WAITING[ctx.guild][0]:
-            if len(WAITING[ctx.guild]) == 1:
-                await ctx.send(":grey_exclamation: There aren't enough players to start. You need at least 2.")
-            else:
-                players = []
-                for player in WAITING[ctx.guild]:
-                    players.append(uno_core.Player(player))
-                game = uno_core.Uno(players, DEFINITIONS[str(
-                    ctx.guild.id)], CARD_INFO, ctx.channel, uno_bot)
-                PLAYING[ctx.guild] = game
-                WAITING.pop(ctx.guild)
-                await game.play_game()
-                PLAYING.pop(ctx.guild)
-        elif ctx.author in WAITING[ctx.guild]:
-            await ctx.send(":x: You are already WAITING for the game! The first caller of the play command should be the one to start.")
-        elif await look_for_player(ctx.author):
-            await ctx.send(":x: You are already in a game in this or in another server!")
-        else:
-            if len(WAITING[ctx.guild]) != 20:
-                WAITING[ctx.guild].append(ctx.author)
-                await ctx.send(
-                    ":white_check_mark: {} has joined the game ({}/20)".format(ctx.author.mention,
-                                                                               len(WAITING[ctx.guild])))
-            else:
-                await ctx.send(":x: The game is already full")
+        WAITING[ctx.guild] = [ctx.author]
+        embed_create_lobby = discord.Embed.from_dict(EMBEDS_DICT['create_lobby'])
+        embed_create_lobby.set_author(
+            name=f'{ctx.author} wants to play a game!',
+            icon_url=str(ctx.author.avatar_url)
+        )
+        embed_create_lobby.set_footer(
+            text=f'UNO Game at "{ctx.guild}"'
+        )
+        await ctx.send(embed=embed_create_lobby)
 
 @uno_bot.command(help="Lets you leave the lobby you're in")
 @commands.guild_only()
 async def leave(ctx):
-    try:
-        WAITING[ctx.guild].remove(ctx.author)
-        await ctx.send(":white_check_mark: {.author.mention} "
-                       "has been removed from the game ({}/20)".format(ctx, len(WAITING[ctx.guild])))
-    except KeyError:
-        await ctx.send(":x: You are not WAITING for any game!")
+    if ctx.guild in WAITING:
+        if ctx.author in WAITING[ctx.guild]:
+            WAITING[ctx.guild].remove(ctx.author)
+            await ctx.send(f'✅ {ctx.auhtor.mention} has left the lobby ({len(WAITING[ctx.guiLd])})')
+    else:
+        await ctx.send('❌ You aren\'t in any lobby!')
 
 
 @uno_bot.command(help="Lets you stop the lobby or the game you're PLAYING")
 @commands.guild_only()
 async def stop(ctx):
-    try:
+    guild_iswaiting = ctx.guild in WAITING.keys()
+    guild_isplaying = ctx.guild in PLAYING.keys()
+
+    if guild_iswaiting:
         WAITING.pop(ctx.guild)
-        await ctx.send(":grey_exclamation: Your game has been cancelled")
-    except KeyError:
-        try:
-            await ctx.send("The game will stop after next player's turn")
-            PLAYING[ctx.guild].stop = True
-        except KeyError:
-            await ctx.send(":x: There are no games to stop")
+        await ctx.send("❕ Your game has been cancelled")
+    elif guild_isplaying:
+        await ctx.send("The game will stop after next player's turn")
+        PLAYING[ctx.guild].stop = True
+    else:
+        await ctx.send(":x: There are no games to stop")
 
 
 @uno_bot.command(help="Lets you stop the lobby or the game you're PLAYING")
@@ -194,6 +197,7 @@ async def change_settings(setting: str, to_change, guild_id: int):
 async def on_ready():
     global DEFINITIONS
     global CARD_INFO
+    global EMBEDS_DICT
     # Loading the card info file
     with open("info.json", "r") as file:
         CARD_INFO = json.load(file)
@@ -207,8 +211,10 @@ async def on_ready():
                 DEFINITIONS[str(guild.id)]
             except KeyError:
                 DEFINITIONS[guild.id] = DEFINITIONS["default"]
-    with open("DEFINITIONS.json", "w") as file:
+    with open("definitions.json", "w") as file:
         json.dump(DEFINITIONS, file, indent="\t")
+    with open('embeds.json', 'r') as file:
+        EMBEDS_DICT = json.load(file)
     print("We are ready to roll!")
 
 

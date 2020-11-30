@@ -1,0 +1,6 @@
+{
+    "create_lobby": {
+        "title": "Lobby Created",
+        "description": "If you want to join the game, use uno join.\nOnce you want to start, {caller} should use uno start.\nUp to six players can join."
+    }
+}
