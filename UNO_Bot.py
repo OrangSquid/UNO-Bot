@@ -20,8 +20,8 @@ async def prefix(bot, message) -> str:
     return "uno "
 
 # Global variables to keep track of games and who's WAITING
-WAITING: Dict[discord.Guild, List[discord.User]] = {}
-PLAYING: Dict[discord.Guild, UNO_Core.Uno] = {}
+WAITING: Dict[int, List[discord.User]] = {}
+PLAYING: Dict[int, UNO_Core.Uno] = {}
 # Keep track of DEFINITIONS and card info like the emojis and images
 EMBEDS_DICT = {}
 DEFINITIONS: Dict[Any, Any] = {}
@@ -43,9 +43,9 @@ async def join(ctx):
     Else try to start it
     """
 
-    wait_list = WAITING[ctx.guild]
+    wait_list = WAITING[ctx.guild.id]
     if ctx.author not in wait_list and len(wait_list) < 6:
-        WAITING[ctx.guild].append(ctx.author)
+        WAITING[ctx.guild.id].append(ctx.author)
         await ctx.send(f'✅ {ctx.author.mention} has joined the game ({len(wait_list)}/6)')
     elif ctx.author == wait_list[0]:
         await start(ctx)
@@ -57,17 +57,17 @@ async def start(ctx):
     Starts the game provided there's one in WAITING
     """
 
-    wait_list = WAITING[ctx.guild]
+    wait_list = WAITING[ctx.guild.id]
     if len(wait_list) == 1:
         await ctx.send("❕ There aren't enough players to start. You need at least 2.")
     else:
         players = [UNO_Core.Player(player) for player in wait_list]
         game = UNO_Core.Uno(players, DEFINITIONS[str(
             ctx.guild.id)], CARD_INFO, ctx.channel, uno_bot)
-        PLAYING[ctx.guild] = game
-        del WAITING[ctx.guild]
+        PLAYING[ctx.guild.id] = game
+        del WAITING[ctx.guild.id]
         await game.play_game()
-        del PLAYING[ctx.guild]
+        del PLAYING[ctx.guild.id]
 
 @uno_bot.command(help="Lets you create a new lobby for a UNO game, join the lobby and start the game")
 @commands.guild_only()
@@ -78,22 +78,22 @@ async def play(ctx):
     Else try to join the game already waiting.
     """
 
-    guild_iswaiting = ctx.guild in WAITING
-    guild_isplaying = ctx.guild in PLAYING
+    guild_iswaiting = ctx.guild.id in WAITING
+    guild_isplaying = ctx.guild.id in PLAYING
     caller_isplaying = look_for_player(ctx.author)
 
     if guild_isplaying:
         await ctx.send('❌ There\'s a game in course in this server!')
     elif caller_isplaying:
         if guild_iswaiting:
-            if WAITING[ctx.guild][0] == ctx.author:
+            if WAITING[ctx.guild.id][0] == ctx.author:
                 await join(ctx)
         else:
             await ctx.send('❌ You\'re already playing in another server!')
     elif guild_iswaiting:
         await join(ctx)
     else:
-        WAITING[ctx.guild] = [ctx.author]
+        WAITING[ctx.guild.id] = [ctx.author]
         embed_create_lobby = discord.Embed.from_dict(EMBEDS_DICT['create_lobby'])
         embed_create_lobby.set_author(
             name=f'{ctx.author} wants to play a game!',
@@ -107,10 +107,10 @@ async def play(ctx):
 @uno_bot.command(help="Lets you leave the lobby you're in")
 @commands.guild_only()
 async def leave(ctx):
-    if ctx.guild in WAITING:
-        if ctx.author in WAITING[ctx.guild]:
-            WAITING[ctx.guild].remove(ctx.author)
-            await ctx.send(f'✅ {ctx.auhtor.mention} has left the lobby ({len(WAITING[ctx.guild])})')
+    if ctx.guild.id in WAITING:
+        if ctx.author in WAITING[ctx.guild.id]:
+            WAITING[ctx.guild.id].remove(ctx.author)
+            await ctx.send(f'✅ {ctx.auhtor.mention} has left the lobby ({len(WAITING[ctx.guild.id])})')
     else:
         await ctx.send('❌ You aren\'t in any lobby!')
 
@@ -118,28 +118,17 @@ async def leave(ctx):
 @uno_bot.command(help="Lets you stop the lobby or the game you're PLAYING")
 @commands.guild_only()
 async def stop(ctx):
-    guild_iswaiting = ctx.guild in WAITING.keys()
-    guild_isplaying = ctx.guild in PLAYING.keys()
+    guild_iswaiting = ctx.guild.id in WAITING.keys()
+    guild_isplaying = ctx.guild.id in PLAYING.keys()
 
     if guild_iswaiting:
-        WAITING.pop(ctx.guild)
+        WAITING.pop(ctx.guild.id)
         await ctx.send("❕ Your game has been cancelled")
     elif guild_isplaying:
         await ctx.send("The game will stop after next player's turn")
-        PLAYING[ctx.guild].stop = True
+        PLAYING[ctx.guild.id].stop = True
     else:
         await ctx.send(":x: There are no games to stop")
-
-
-@uno_bot.command(help="Lets you stop the lobby or the game you're PLAYING")
-@commands.guild_only()
-async def debug(ctx):
-    player = UNO_Core.Player(ctx.author)
-    game = UNO_Core.Uno([player, player], DEFINITIONS[str(
-        ctx.guild.id)], CARD_INFO, ctx.channel, uno_bot)
-    PLAYING[ctx.guild] = game
-    await game.play_game()
-    PLAYING.pop(ctx.guild)
 
 
 @uno_bot.group()
