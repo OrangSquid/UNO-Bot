@@ -29,7 +29,7 @@ CARD_INFO: Dict[str, List[Any]] = {}
 uno_bot = commands.Bot(command_prefix=prefix)
 
 
-async def look_for_player(caller: discord.User) -> bool:
+def look_for_player(caller: discord.User) -> bool:
     # Looks if the caller of either join or play_uno is already in a game to avoid confusion in DMs with the bot
     for game in PLAYING.values():
         if caller in game.order:
@@ -45,13 +45,12 @@ async def join(ctx):
 
     wait_list = WAITING[ctx.guild]
     if ctx.author not in wait_list and len(wait_list) < 6:
-        wait_list.append(ctx.author)
+        WAITING[ctx.guild].append(ctx.author)
         await ctx.send(f'✅ {ctx.author.mention} has joined the game ({len(wait_list)}/6)')
     elif ctx.author == wait_list[0]:
-        start(ctx)
+        await start(ctx)
     else:
         await ctx.send('❌ You\'re already in the game or the lobby is full!\n❕ Please note the first caller of the play command should call it again to begin the game')
-
 
 async def start(ctx):
     """
@@ -66,9 +65,9 @@ async def start(ctx):
         game = UNO_Core.Uno(players, DEFINITIONS[str(
             ctx.guild.id)], CARD_INFO, ctx.channel, uno_bot)
         PLAYING[ctx.guild] = game
-        WAITING.remove(ctx.guild)
+        del WAITING[ctx.guild]
         await game.play_game()
-        PLAYING.remove(ctx.guild)
+        del PLAYING[ctx.guild]
 
 @uno_bot.command(help="Lets you create a new lobby for a UNO game, join the lobby and start the game")
 @commands.guild_only()
@@ -80,13 +79,17 @@ async def play(ctx):
     """
 
     guild_iswaiting = ctx.guild in WAITING
-    guild_isplaying = ctx.guiLd in PLAYING
+    guild_isplaying = ctx.guild in PLAYING
     caller_isplaying = look_for_player(ctx.author)
 
     if guild_isplaying:
         await ctx.send('❌ There\'s a game in course in this server!')
     elif caller_isplaying:
-        await ctx.send('❌ You\'re already playing in another server!')
+        if guild_iswaiting:
+            if WAITING[ctx.guild][0] == ctx.author:
+                await join(ctx)
+        else:
+            await ctx.send('❌ You\'re already playing in another server!')
     elif guild_iswaiting:
         await join(ctx)
     else:
@@ -107,7 +110,7 @@ async def leave(ctx):
     if ctx.guild in WAITING:
         if ctx.author in WAITING[ctx.guild]:
             WAITING[ctx.guild].remove(ctx.author)
-            await ctx.send(f'✅ {ctx.auhtor.mention} has left the lobby ({len(WAITING[ctx.guiLd])})')
+            await ctx.send(f'✅ {ctx.auhtor.mention} has left the lobby ({len(WAITING[ctx.guild])})')
     else:
         await ctx.send('❌ You aren\'t in any lobby!')
 
