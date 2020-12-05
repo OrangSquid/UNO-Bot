@@ -1,0 +1,707 @@
+{
+	"red 0": {
+		"name": "**RED 0**",
+		"alias": [
+			"red 0",
+			"r0",
+			"0 red",
+			"0r"
+		],
+		"emoji": "<:red0:672954923008131122>",
+		"image_url": "https://raw.githubusercontent.com/OrangSquid/UNO-Bot/master/deck/red%200.png",
+		"color": 16733525
+	},
+	"red 1": {
+		"name": "**RED 1**",
+		"alias": [
+			"red 1",
+			"r1",
+			"1 red",
+			"1r"
+		],
+		"emoji": "<:red1:672954938409615383>",
+		"image_url": "https://raw.githubusercontent.com/OrangSquid/UNO-Bot/master/deck/red%201.png",
+		"color": 16733525
+	},
+	"red 2": {
+		"name": "**RED 2**",
+		"emoji": "<:red2:672955019666128946>",
+		"image_url": "https://raw.githubusercontent.com/OrangSquid/UNO-Bot/master/deck/red%202.png",
+		"alias": [
+			"red 2",
+			"r2",
+			"2r",
+			"2 red"
+		],
+		"color": 16733525
+	},
+	"red 3": {
+		"name": "**RED 3**",
+		"emoji": "<:red3:672955040058834954>",
+		"image_url": "https://raw.githubusercontent.com/OrangSquid/UNO-Bot/master/deck/red%203.png",
+		"alias": [
+			"red 3",
+			"r3",
+			"3r",
+			"3 red"
+		],
+		"color": 16733525
+	},
+	"red 4": {
+		"name": "**RED 4**",
+		"emoji": "<:red4:672955053639991337>",
+		"image_url": "https://raw.githubusercontent.com/OrangSquid/UNO-Bot/master/deck/red%204.png",
+		"alias": [
+			"red 4",
+			"r4",
+			"4r",
+			"4 red"
+		],
+		"color": 16733525
+	},
+	"red 5": {
+		"name": "**RED 5**",
+		"emoji": "<:red5:672955063106404411>",
+		"image_url": "https://raw.githubusercontent.com/OrangSquid/UNO-Bot/master/deck/red%205.png",
+		"alias": [
+			"red 5",
+			"r5",
+			"5r",
+			"5 red"
+		],
+		"color": 16733525
+	},
+	"red 6": {
+		"name": "**RED 6**",
+		"emoji": "<:red6:672955071000215553>",
+		"image_url": "https://raw.githubusercontent.com/OrangSquid/UNO-Bot/master/deck/red%206.png",
+		"alias": [
+			"red 6",
+			"r6",
+			"6r",
+			"6 red"
+		],
+		"color": 16733525
+	},
+	"red 7": {
+		"name": "**RED 7**",
+		"emoji": "<:red7:672955078142853141>",
+		"image_url": "https://raw.githubusercontent.com/OrangSquid/UNO-Bot/master/deck/red%207.png",
+		"alias": [
+			"red 7",
+			"r7",
+			"7r",
+			"7 red"
+		],
+		"color": 16733525
+	},
+	"red 8": {
+		"name": "**RED 8**",
+		"emoji": "<:red8:672955085919092748>",
+		"image_url": "https://raw.githubusercontent.com/OrangSquid/UNO-Bot/master/deck/red%208.png",
+		"alias": [
+			"red 8",
+			"r8",
+			"8r",
+			"8 red"
+		],
+		"color": 16733525
+	},
+	"red 9": {
+		"name": "**RED 9**",
+		"emoji": "<:red9:672955093489811467>",
+		"image_url": "https://raw.githubusercontent.com/OrangSquid/UNO-Bot/master/deck/red%209.png",
+		"alias": [
+			"red 9",
+			"r9",
+			"9r",
+			"9 red"
+		],
+		"color": 16733525
+	},
+	"red plus": {
+		"name": "**RED 2+**",
+		"emoji": "<:redplus:672955105590509595>",
+		"image_url": "https://raw.githubusercontent.com/OrangSquid/UNO-Bot/master/deck/red%20plus.png",
+		"alias": [
+			"red plus",
+			"red +",
+			"rp",
+			"r+",
+			"pr",
+			"+r",
+			"plus red",
+			"+ red"
+		],
+		"color": 16733525
+	},
+	"red reverse": {
+		"name": "**RED REVERSE**",
+		"emoji": "<:redreverse:672955116407619595>",
+		"image_url": "https://raw.githubusercontent.com/OrangSquid/UNO-Bot/master/deck/red%20reverse.png",
+		"alias": [
+			"red reverse",
+			"rr",
+			"rr",
+			"reverse red"
+		],
+		"color": 16733525
+	},
+	"red skip": {
+		"name": "**RED SKIP**",
+		"emoji": "<:redskip:672955128281563146>",
+		"image_url": "https://raw.githubusercontent.com/OrangSquid/UNO-Bot/master/deck/red%20skip.png",
+		"alias": [
+			"red skip",
+			"rs",
+			"sr",
+			"skip red"
+		],
+		"color": 16733525
+	},
+	"yellow 0": {
+		"name": "**YELLOW 0**",
+		"emoji": "<:yellow0:672955142232080404>",
+		"image_url": "https://raw.githubusercontent.com/OrangSquid/UNO-Bot/master/deck/yellow%200.png",
+		"alias": [
+			"yellow 0",
+			"y0",
+			"0y",
+			"0 yellow"
+		],
+		"color": 16755200
+	},
+	"yellow 1": {
+		"name": "**YELLOW 1**",
+		"emoji": "<:yellow1:672955153032282122>",
+		"image_url": "https://raw.githubusercontent.com/OrangSquid/UNO-Bot/master/deck/yellow%201.png",
+		"alias": [
+			"yellow 1",
+			"y1",
+			"1y",
+			"1 yellow"
+		],
+		"color": 16755200
+	},
+	"yellow 2": {
+		"name": "**YELLOW 2**",
+		"emoji": "<:yellow2:672955162494500864>",
+		"image_url": "https://raw.githubusercontent.com/OrangSquid/UNO-Bot/master/deck/yellow%202.png",
+		"alias": [
+			"yellow 2",
+			"y2",
+			"2y",
+			"2 yellow"
+		],
+		"color": 16755200
+	},
+	"yellow 3": {
+		"name": "**YELLOW 3**",
+		"emoji": "<:yellow3:672955172355440651>",
+		"image_url": "https://raw.githubusercontent.com/OrangSquid/UNO-Bot/master/deck/yellow%203.png",
+		"alias": [
+			"yellow 3",
+			"y3",
+			"3y",
+			"3 yellow"
+		],
+		"color": 16755200
+	},
+	"yellow 4": {
+		"name": "**YELLOW 4**",
+		"emoji": "<:yellow4:672955181729579008>",
+		"image_url": "https://raw.githubusercontent.com/OrangSquid/UNO-Bot/master/deck/yellow%204.png",
+		"alias": [
+			"yellow 4",
+			"y4",
+			"4y",
+			"4 yellow"
+		],
+		"color": 16755200
+	},
+	"yellow 5": {
+		"name": "**YELLOW 5**",
+		"emoji": "<:yellow5:672955193968820235>",
+		"image_url": "https://raw.githubusercontent.com/OrangSquid/UNO-Bot/master/deck/yellow%205.png",
+		"alias": [
+			"yellow 5",
+			"y5",
+			"5y",
+			"5 yellow"
+		],
+		"color": 16755200
+	},
+	"yellow 6": {
+		"name": "**YELLOW 6**",
+		"emoji": "<:yellow6:672955205025005572>",
+		"image_url": "https://raw.githubusercontent.com/OrangSquid/UNO-Bot/master/deck/yellow%206.png",
+		"alias": [
+			"yellow 6",
+			"y6",
+			"6y",
+			"6 yellow"
+		],
+		"color": 16755200
+	},
+	"yellow 7": {
+		"name": "**YELLOW 7**",
+		"emoji": "<:yellow7:672955215166701598>",
+		"image_url": "https://raw.githubusercontent.com/OrangSquid/UNO-Bot/master/deck/yellow%207.png",
+		"alias": [
+			"yellow 7",
+			"y7",
+			"7y",
+			"7 yellow"
+		],
+		"color": 16755200
+	},
+	"yellow 8": {
+		"name": "**YELLOW 8**",
+		"emoji": "<:yellow8:672955225396477973>",
+		"image_url": "https://raw.githubusercontent.com/OrangSquid/UNO-Bot/master/deck/yellow%208.png",
+		"alias": [
+			"yellow 8",
+			"y8",
+			"8y",
+			"8 yellow"
+		],
+		"color": 16755200
+	},
+	"yellow 9": {
+		"name": "**YELLOW 9**",
+		"emoji": "<:yellow9:672955235005759508>",
+		"image_url": "https://raw.githubusercontent.com/OrangSquid/UNO-Bot/master/deck/yellow%209.png",
+		"alias": [
+			"yellow 9",
+			"y9",
+			"9y",
+			"9 yellow"
+		],
+		"color": 16755200
+	},
+	"yellow plus": {
+		"name": "**YELLOW 2+**",
+		"emoji": "<:yellowplus:672955248784179208>",
+		"image_url": "https://raw.githubusercontent.com/OrangSquid/UNO-Bot/master/deck/yellow%20plus.png",
+		"alias": [
+			"yellow plus",
+			"yellow +",
+			"yp",
+			"y+",
+			"py",
+			"+y",
+			"plus yellow",
+			"+ yellow"
+		],
+		"color": 16755200
+	},
+	"yellow reverse": {
+		"name": "**YELLOW REVERSE**",
+		"emoji": "<:yellowreverse:672955258598850589>",
+		"image_url": "https://raw.githubusercontent.com/OrangSquid/UNO-Bot/master/deck/yellow%20reverse.png",
+		"alias": [
+			"yellow reverse",
+			"yr",
+			"ry",
+			"reverse yellow"
+		],
+		"color": 16755200
+	},
+	"yellow skip": {
+		"name": "**YELLOW SKIP**",
+		"emoji": "<:yellowskip:672955269512167454>",
+		"image_url": "https://raw.githubusercontent.com/OrangSquid/UNO-Bot/master/deck/yellow%20skip.png",
+		"alias": [
+			"yellow skip",
+			"ys",
+			"sy",
+			"skip yellow"
+		],
+		"color": 16755200
+	},
+	"green 0": {
+		"name": "**GREEN 0**",
+		"emoji": "<:green0:672955280916611084>",
+		"image_url": "https://raw.githubusercontent.com/OrangSquid/UNO-Bot/master/deck/green%200.png",
+		"alias": [
+			"green 0",
+			"g0",
+			"0g",
+			"0 green"
+		],
+		"color": 5614165
+	},
+	"green 1": {
+		"name": "**GREEN 1**",
+		"emoji": "<:green1:672955290123239445>",
+		"image_url": "https://raw.githubusercontent.com/OrangSquid/UNO-Bot/master/deck/green%201.png",
+		"alias": [
+			"green 1",
+			"g1",
+			"1g",
+			"1 green"
+		],
+		"color": 5614165
+	},
+	"green 2": {
+		"name": "**GREEN 2**",
+		"emoji": "<:green2:672955297974714369>",
+		"image_url": "https://raw.githubusercontent.com/OrangSquid/UNO-Bot/master/deck/green%202.png",
+		"alias": [
+			"green 2",
+			"g2",
+			"2g",
+			"2 green"
+		],
+		"color": 5614165
+	},
+	"green 3": {
+		"name": "**GREEN 3**",
+		"emoji": "<:green3:672955305839296562>",
+		"image_url": "https://raw.githubusercontent.com/OrangSquid/UNO-Bot/master/deck/green%203.png",
+		"alias": [
+			"green 3",
+			"g3",
+			"3g",
+			"3 green"
+		],
+		"color": 5614165
+	},
+	"green 4": {
+		"name": "**GREEN 4**",
+		"emoji": "<:green4:672955311648276500>",
+		"image_url": "https://raw.githubusercontent.com/OrangSquid/UNO-Bot/master/deck/green%204.png",
+		"alias": [
+			"green 4",
+			"g4",
+			"4g",
+			"4 green"
+		],
+		"color": 5614165
+	},
+	"green 5": {
+		"name": "**GREEN 5**",
+		"emoji": "<:green5:672955324864528385>",
+		"image_url": "https://raw.githubusercontent.com/OrangSquid/UNO-Bot/master/deck/green%205.png",
+		"alias": [
+			"green 5",
+			"g5",
+			"5g",
+			"5 green"
+		],
+		"color": 5614165
+	},
+	"green 6": {
+		"name": "**GREEN 6**",
+		"emoji": "<:green6:672955334033276960>",
+		"image_url": "https://raw.githubusercontent.com/OrangSquid/UNO-Bot/master/deck/green%206.png",
+		"alias": [
+			"green 6",
+			"g6",
+			"6g",
+			"6 green"
+		],
+		"color": 5614165
+	},
+	"green 7": {
+		"name": "**GREEN 7**",
+		"emoji": "<:green7:672955343843622923>",
+		"image_url": "https://raw.githubusercontent.com/OrangSquid/UNO-Bot/master/deck/green%207.png",
+		"alias": [
+			"green 7",
+			"g7",
+			"7g",
+			"7 green"
+		],
+		"color": 5614165
+	},
+	"green 8": {
+		"name": "**GREEN 8**",
+		"emoji": "<:green8:672955351926177812>",
+		"image_url": "https://raw.githubusercontent.com/OrangSquid/UNO-Bot/master/deck/green%208.png",
+		"alias": [
+			"green 8",
+			"g8",
+			"8g",
+			"8 green"
+		],
+		"color": 5614165
+	},
+	"green 9": {
+		"name": "**GREEN 9**",
+		"emoji": "<:green9:672955360570638369>",
+		"image_url": "https://raw.githubusercontent.com/OrangSquid/UNO-Bot/master/deck/green%209.png",
+		"alias": [
+			"green 9",
+			"g9",
+			"9g",
+			"9 green"
+		],
+		"color": 5614165
+	},
+	"green plus": {
+		"name": "**GREEN 2+**",
+		"emoji": "<:greenplus:672955374319566877>",
+		"image_url": "https://raw.githubusercontent.com/OrangSquid/UNO-Bot/master/deck/green%20plus.png",
+		"alias": [
+			"green plus",
+			"green +",
+			"gp",
+			"g+",
+			"pg",
+			"+g",
+			"plus green",
+			"+ green"
+		],
+		"color": 5614165
+	},
+	"green reverse": {
+		"name": "**GREEN REVERSE**",
+		"emoji": "<:greenreverse:672955383999889448>",
+		"image_url": "https://raw.githubusercontent.com/OrangSquid/UNO-Bot/master/deck/green%20reverse.png",
+		"alias": [
+			"green reverse",
+			"gr",
+			"rg",
+			"reverse green"
+		],
+		"color": 5614165
+	},
+	"green skip": {
+		"name": "**GREEN SKIP**",
+		"emoji": "<:greenskip:672955391277137931>",
+		"image_url": "https://raw.githubusercontent.com/OrangSquid/UNO-Bot/master/deck/green%20skip.png",
+		"alias": [
+			"green skip",
+			"gs",
+			"sg",
+			"skip green"
+		],
+		"color": 5614165
+	},
+	"blue 0": {
+		"name": "**BLUE 0**",
+		"emoji": "<:blue0:672955401897246721>",
+		"image_url": "https://raw.githubusercontent.com/OrangSquid/UNO-Bot/master/deck/blue%200.png",
+		"alias": [
+			"blue 0",
+			"b0",
+			"0b",
+			"0 blue"
+		],
+		"color": 5592575
+	},
+	"blue 1": {
+		"name": "**BLUE 1**",
+		"emoji": "<:blue1:672955411887816714>",
+		"image_url": "https://raw.githubusercontent.com/OrangSquid/UNO-Bot/master/deck/blue%201.png",
+		"alias": [
+			"blue 1",
+			"b1",
+			"1b",
+			"1 blue"
+		],
+		"color": 5592575
+	},
+	"blue 2": {
+		"name": "**BLUE 2**",
+		"emoji": "<:blue2:672955419764719626>",
+		"image_url": "https://raw.githubusercontent.com/OrangSquid/UNO-Bot/master/deck/blue%202.png",
+		"alias": [
+			"blue 2",
+			"b2",
+			"2b",
+			"2 blue"
+		],
+		"color": 5592575
+	},
+	"blue 3": {
+		"name": "**BLUE 3**",
+		"emoji": "<:blue3:672955428727947284>",
+		"image_url": "https://raw.githubusercontent.com/OrangSquid/UNO-Bot/master/deck/blue%203.png",
+		"alias": [
+			"blue 3",
+			"b3",
+			"3b",
+			"3 blue"
+		],
+		"color": 5592575
+	},
+	"blue 4": {
+		"name": "**BLUE 4**",
+		"emoji": "<:blue4:672955436139544640>",
+		"image_url": "https://raw.githubusercontent.com/OrangSquid/UNO-Bot/master/deck/blue%204.png",
+		"alias": [
+			"blue 4",
+			"b4",
+			"4b",
+			"4 blue"
+		],
+		"color": 5592575
+	},
+	"blue 5": {
+		"name": "**BLUE 5**",
+		"emoji": "<:blue5:672955445169881138>",
+		"image_url": "https://raw.githubusercontent.com/OrangSquid/UNO-Bot/master/deck/blue%205.png",
+		"alias": [
+			"blue 5",
+			"b5",
+			"5b",
+			"5 blue"
+		],
+		"color": 5592575
+	},
+	"blue 6": {
+		"name": "**BLUE 6**",
+		"emoji": "<:blue6:672955453335928870>",
+		"image_url": "https://raw.githubusercontent.com/OrangSquid/UNO-Bot/master/deck/blue%206.png",
+		"alias": [
+			"blue 6",
+			"b6",
+			"6b",
+			"6 blue"
+		],
+		"color": 5592575
+	},
+	"blue 7": {
+		"name": "**BLUE 7**",
+		"emoji": "<:blue7:672955460701388830>",
+		"image_url": "https://raw.githubusercontent.com/OrangSquid/UNO-Bot/master/deck/blue%207.png",
+		"alias": [
+			"blue 7",
+			"b7",
+			"7b",
+			"7 blue"
+		],
+		"color": 5592575
+	},
+	"blue 8": {
+		"name": "**BLUE 8**",
+		"emoji": "<:blue8:672955468284559380>",
+		"image_url": "https://raw.githubusercontent.com/OrangSquid/UNO-Bot/master/deck/blue%208.png",
+		"alias": [
+			"blue 8",
+			"b8",
+			"8b",
+			"8 blue"
+		],
+		"color": 5592575
+	},
+	"blue 9": {
+		"name": "**BLUE 9**",
+		"emoji": "<:blue9:672955477063237653>",
+		"image_url": "https://raw.githubusercontent.com/OrangSquid/UNO-Bot/master/deck/blue%209.png",
+		"alias": [
+			"blue 9",
+			"b9",
+			"9b",
+			"9 blue"
+		],
+		"color": 5592575
+	},
+	"blue plus": {
+		"name": "**BLUE 2+**",
+		"emoji": "<:blueplus:672955485066100746>",
+		"image_url": "https://raw.githubusercontent.com/OrangSquid/UNO-Bot/master/deck/blue%20plus.png",
+		"alias": [
+			"blue plus",
+			"bs",
+			"sb",
+			"plus blue"
+		],
+		"color": 5592575
+	},
+	"blue reverse": {
+		"name": "**BLUE REVERSE**",
+		"emoji": "<:bluereverse:672955984477552653>",
+		"image_url": "https://raw.githubusercontent.com/OrangSquid/UNO-Bot/master/deck/blue%20reverse.png",
+		"alias": [
+			"blue reverse",
+			"be",
+			"eb",
+			"reverse blue"
+		],
+		"color": 5592575
+	},
+	"blue skip": {
+		"name": "**BLUE SKIP**",
+		"emoji": "<:blueskip:672955996041248780>",
+		"image_url": "https://raw.githubusercontent.com/OrangSquid/UNO-Bot/master/deck/blue%20skip.png",
+		"alias": [
+			"blue skip",
+			"bs",
+			"sb",
+			"skip blue"
+		],
+		"color": 5592575
+	},
+	"wild card": {
+		"name": "**WILD CARD**",
+		"emoji": "<:wildcard:672956006158041126>",
+		"image_url": "https://raw.githubusercontent.com/OrangSquid/UNO-Bot/master/deck/wild%20card.png",
+		"alias": [
+			"wild card",
+			"w",
+			"wild"
+		]
+	},
+	"wild plus": {
+		"name": "**WILD 4+**",
+		"emoji": "<:wildplus:672956016542875681>",
+		"image_url": "https://raw.githubusercontent.com/OrangSquid/UNO-Bot/master/deck/wild%20plus.png",
+		"alias": [
+			"wild plus",
+			"w+",
+			"+w",
+			"plus wild"
+		]
+	},
+	"red wild card": {
+		"name": "**RED WILD CARD**",
+		"emoji": "<:redwildcard:673909975764041749>",
+		"image_url": "https://raw.githubusercontent.com/OrangSquid/UNO-Bot/master/deck/red%20wild%20card.png",
+		"color": 16733525
+	},
+	"red wild plus": {
+		"name": "**RED WILD 4+**",
+		"emoji": "<:redwildplus:673909988846206976>",
+		"image_url": "https://raw.githubusercontent.com/OrangSquid/UNO-Bot/master/deck/red%20wild%20plus.png",
+		"color": 16733525
+	},
+	"yellow wild card": {
+		"name": "**YELLOW WILD CARD**",
+		"emoji": "<:yellowwildcard:673910001475125250>",
+		"image_url": "https://raw.githubusercontent.com/OrangSquid/UNO-Bot/master/deck/yellow%20wild%20card.png",
+		"color": 16755200
+	},
+	"yellow wild plus": {
+		"name": "**YELLOW WILD 4+**",
+		"emoji": "<:yellowwildplus:673910013437149194>",
+		"image_url": "https://raw.githubusercontent.com/OrangSquid/UNO-Bot/master/deck/yellow%20wild%20plus.png",
+		"color": 16755200
+	},
+	"green wild card": {
+		"name": "**GREEN WILD CARD**",
+		"emoji": "<:greenwildcard:673909955375398928>",
+		"image_url": "https://raw.githubusercontent.com/OrangSquid/UNO-Bot/master/deck/green%20wild%20card.png",
+		"color": 5614165
+	},
+	"green wild plus": {
+		"name": "**GREEN WILD 4+**",
+		"emoji": "<:greenwildplus:673909964263391243>",
+		"image_url": "https://raw.githubusercontent.com/OrangSquid/UNO-Bot/master/deck/green%20wild%20plus.png",
+		"color": 5614165
+	},
+	"blue wild card": {
+		"name": "**BLUE WILD CARD**",
+		"emoji": "<:bluewildcard:673909927131217971>",
+		"image_url": "https://raw.githubusercontent.com/OrangSquid/UNO-Bot/master/deck/blue%20wild%20card.png",
+		"color": 5592575
+	},
+	"blue wild plus": {
+		"name": "**BLUE WILD 4+**",
+		"emoji": "<:bluewildplus:673909940867301377>",
+		"image_url": "https://raw.githubusercontent.com/OrangSquid/UNO-Bot/master/deck/blue%20wild%20plus.png",
+		"color": 5592575
+	}
+}
